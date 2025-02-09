@@ -1,0 +1,47 @@
+.constraintList {
+  line-height: 1;
+}
+
+.elementsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.constraintArea {
+  line-height: 0.5;
+}
+
+.inputElement {
+  width: 400px;
+  height: 40px;
+  background-color: #fbfbfb;
+  border-radius: 10px;
+  font-size: 23px;
+  border: none;
+}
+
+.usernameLabel {
+  font-size: 23px;
+}
+.passwordLabel {
+  font-size: 23px;
+}
+.button {
+  width: 160px;
+  height: 40px;
+  font-family: "Inter";
+  border: none;
+  border-radius: 15px;
+  background-color: #ffb500;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.centerButtonLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

@@ -1,0 +1,58 @@
+.elementsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.inputElement {
+  width: 400px;
+  height: 40px;
+  background-color: #fbfbfb;
+  border-radius: 10px;
+  font-size: 23px;
+  border: none;
+}
+
+#password {
+}
+
+.usernameLabel {
+  font-size: 23px;
+}
+.passwordLabel {
+  font-size: 23px;
+}
+
+.button {
+  width: 160px;
+  height: 40px;
+  font-family: "Inter";
+  border: none;
+  border-radius: 15px;
+  background-color: #ffb500;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #ffd722;
+}
+
+.centerButtonLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#page-header {
+  text-align: center;
+}
+
+.loginError {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  color: #fe4312;
+}

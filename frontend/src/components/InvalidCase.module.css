@@ -1,0 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
+.warning {
+  color: #fe4312;
+  /*font-family: "Bebas Neue";*/
+}
+
+.success {
+  color: #00ff00;
+}
