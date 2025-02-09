@@ -20,10 +20,7 @@ def register_routes(app, db, bcrypt):
             user_exists = User.query.filter(User.username == username).first()
 
             if user_exists:
-                return jsonify({"message": "User with the supplied username already exists"}) # works
-                                                                                              # resume here 1/20 implement redirect for successfully signing up and logging in
-                                                                                              # watch user authentication video(s) to find out how to keep track of logged in user
-                                                                                              # (or use flask login)
+                return jsonify({"message": "User with the supplied username already exists"})
             hashed_password = bcrypt.generate_password_hash(password)
 
             user = User(username=username, password=hashed_password)

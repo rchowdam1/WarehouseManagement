@@ -16,9 +16,6 @@ class User(db.Model):
         }
     
 
-# resume here 2/1, running flask db upgrade does not work (executed flask db migrate, need to execute upgrade)
-# the reason is, a new column was created in the user model, and there is an issue with sqlite
-
 # make a new model to keep track of inventory
 class Warehouse(db.Model):
     __tablename__ = "warehouses"
