@@ -44,10 +44,6 @@ function Landing() {
     navigate("/login", { replace: true });
   };
 
-  // resume here 1/31 implement the modal design on figma when clicking the profile button
-  // first draw out a left triangle, then put in a container with a rectangle with flex direction to row
-  // look at TWT project on github to see how to implement modal
-
   return (
     <div>
       <AuthenticatedLayout />

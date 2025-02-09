@@ -9,7 +9,6 @@ import Layout from "./components/Layout/Layout";
 import Landing from "./pages/Landing";
 
 function App() {
-  // resume here 1/25, the Landing page is not displaying the correct navbar
   return (
     <Routes>
       <Route path="/" element={<Home />} exact={true} />
