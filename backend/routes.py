@@ -68,7 +68,8 @@ def register_routes(app, db, bcrypt):
             if not user:
                 return jsonify({"message": "user was not found with the supplied id"}), 404
             
-            return jsonify({"message": "Found user", "username": user.username}), 200
+            # print(f"warehouses: {user.warehouses}")
+            return jsonify({"message": "Found user", "username": user.username, "warehouses": user.warehouses}), 200
         except Exception as e:
             return jsonify({"message": "user was not found with the supplied id"}), 404
             

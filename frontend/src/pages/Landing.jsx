@@ -2,6 +2,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import AuthenticatedLayout from "../components/Layout/AuthenticatedLayout";
+import Warehouses from "../components/Warehouses";
+import AddWarehouses from "../components/AddWarehouses";
+import ClearAll from "../components/ClearAll";
+import LeftHandButton from "../components/LeftHandButton";
 import classes from "./Landing.module.css";
 
 function Landing() {
@@ -10,6 +14,7 @@ function Landing() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [loadedUsername, setLoadedUsername] = useState("");
+  const [userWarehouses, setUserWarehouses] = useState([]);
 
   useEffect(() => {
     const retrieve = async () => {
@@ -23,6 +28,10 @@ function Landing() {
         } else {
           const received = await response.json();
           setLoadedUsername(received.username);
+          setUserWarehouses(received.warehouses);
+          console.log(
+            "The type of the retrieved warehouses are " + typeof userWarehouses
+          );
         }
       } catch (error) {
         alert(error);
@@ -89,10 +98,40 @@ function Landing() {
       <br />
       <br />
 
-      <h1 style={{ fontSize: "40px", textAlign: "center" }}>
+      <h1
+        style={{
+          fontSize: "40px",
+          textAlign: "center",
+          position: "relative",
+          left: "75px",
+        }}
+      >
         Welcome back, {loadedUsername}
       </h1>
-      <h2 style={{ fontSize: "28px", textAlign: "center" }}>Warehouses</h2>
+      <h2
+        style={{
+          fontSize: "28px",
+          textAlign: "center",
+          position: "relative",
+          left: "75px",
+        }}
+      >
+        Warehouses
+      </h2>
+
+      <div
+        className="content-container"
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <LeftHandButton styling={{ position: "relative", left: "75px" }} />
+        <Warehouses />
+      </div>
+
+      <br />
+      <br />
     </div>
   );
 }

@@ -1,0 +1,14 @@
+.addButtonContainer {
+  height: 100px;
+  width: 100px;
+  background-color: #ffffff;
+  border-radius: 15px;
+}
+
+.addButtonContainer:hover {
+  background-color: #aaaaaa;
+}
+
+.addButtonContainer:active {
+  background-color: #888888;
+}
