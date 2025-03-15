@@ -12,3 +12,22 @@
 .addButtonContainer:active {
   background-color: #888888;
 }
+
+.submitButton {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  font-size: 22px;
+  width: 100px;
+  font-family: "Inter";
+  border-radius: 10px;
+  background-color: #ffb500;
+  border: none;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #ffd722;
+}

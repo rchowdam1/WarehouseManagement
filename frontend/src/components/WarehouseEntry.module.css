@@ -1,0 +1,12 @@
+.entry {
+  width: 120px;
+  height: 200px;
+  text-align: center;
+  padding-left: 137px;
+  padding-top: 50px;
+  cursor: pointer;
+}
+
+.entry:hover {
+  transform: scale(1.2);
+}

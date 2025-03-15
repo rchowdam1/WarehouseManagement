@@ -1,0 +1,7 @@
+dblog.txt
+resources.txt
+Debugging/
+backend/__pycache__
+backend/.venv
+backend/instance
+backend/migrations

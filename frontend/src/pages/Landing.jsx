@@ -16,6 +16,10 @@ function Landing() {
   const [loadedUsername, setLoadedUsername] = useState("");
   const [userWarehouses, setUserWarehouses] = useState([]);
 
+  // Modals resulting from clicking Left Hand Buttons
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [clearModalOpen, setClearModalOpen] = useState(false);
+
   useEffect(() => {
     const retrieve = async () => {
       try {
@@ -27,11 +31,9 @@ function Landing() {
           alert(response);
         } else {
           const received = await response.json();
+          console.log(received.warehouses);
           setLoadedUsername(received.username);
           setUserWarehouses(received.warehouses);
-          console.log(
-            "The type of the retrieved warehouses are " + typeof userWarehouses
-          );
         }
       } catch (error) {
         alert(error);
@@ -126,8 +128,25 @@ function Landing() {
           alignItems: "center",
         }}
       >
-        <LeftHandButton styling={{ position: "relative", left: "75px" }} />
-        <Warehouses />
+        <LeftHandButton
+          styling={{ position: "relative", left: "75px" }}
+          addWarehouseModalStatus={createModalOpen}
+          clearWarehouseModalStatus={clearModalOpen}
+          userID={location.state.userID}
+          onAddWarehouseClick={() => {
+            setCreateModalOpen(true);
+          }}
+          onClearWarehouseClick={() => {
+            setClearModalOpen(true);
+          }}
+          closeAddWarehouseModal={() => {
+            setCreateModalOpen(false);
+          }}
+          closeClearWarehouseModal={() => {
+            setClearModalOpen(false);
+          }}
+        />
+        <Warehouses loadedWarehouses={userWarehouses} />
       </div>
 
       <br />

@@ -1,7 +1,7 @@
 from flask import request, render_template, jsonify
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
-from models import User
+from models import User, Warehouse, Item
 
 
 def register_routes(app, db, bcrypt):
@@ -62,15 +62,21 @@ def register_routes(app, db, bcrypt):
     # once the user is retrieved, we can display the user's collections
     @app.route("/select_user/<int:user_id>", methods=["GET"])
     def select_user(user_id):
+
+        # temp
+        """user = User.query.all()[0]
+        print(user.pid, " - user's id which DOES EXIST")"""
+
         try:
             user = User.query.filter(User.pid == user_id).first()
-
+            
             if not user:
                 return jsonify({"message": "user was not found with the supplied id"}), 404
             
             # print(f"warehouses: {user.warehouses}")
-            return jsonify({"message": "Found user", "username": user.username, "warehouses": user.warehouses}), 200
+            return jsonify({"message": "Found user", "username": user.username, "warehouses": [warehouse.to_json() for warehouse in user.warehouses]}), 200
         except Exception as e:
+            print(f"The exception is {e}")
             return jsonify({"message": "user was not found with the supplied id"}), 404
             
 
@@ -113,8 +119,39 @@ def register_routes(app, db, bcrypt):
     # Warehouse routes
     ##############################################################
     # Create the CRUD Routes for warehouses & items
-    
 
+    # CREATE
+    # When making a request to this endpoint, the warehouse name and user id of the owner of the warehouse must be provided
+    # as json arguments
+    @app.route("/create_warehouse", methods=["POST", "GET"])
+    def create_warehouse():
+        try:
+            warehouse_name = request.json.get("warehouseName")
+            user_id = request.json.get("userID")
+            warehouse_exists = Warehouse.query.filter(Warehouse.name == warehouse_name).first()
+
+            if warehouse_exists:
+                return jsonify({"message": "Warehouse with supplied name exists already"}), 406
+            
+            user = User.query.filter(User.pid == user_id).first()
+
+            if not user:
+                return jsonify({"message": "The User does not exist"}), 404
+            
+
+            
+            warehouse = Warehouse(name=warehouse_name, user=user)
+            db.session.add(warehouse)
+            db.session.commit()
+
+            return jsonify({"message", "Warehouse Creation Successful"}), 200
+        
+        except Exception as e:
+            return jsonify({"message", "An error occurred"}), 400
+
+
+    
+    # resume here 2/15, resolve CORS when sending a request to the above endpoint
     # items
     # Create
 

@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
+import WarehouseRow from "./WarehouseRow";
+import WarehouseEntry from "./WarehouseEntry";
 import classes from "./Warehouses.module.css";
 
 function Warehouses({ loadedWarehouses }) {
-  // resume here 2/9, the container to display the user's warehouses
-  console.log(
-    "type of user warehouses from Warehouses.jsx " + typeof loadedWarehouses
-  );
-
   const placeHolderElement = (
     <div
       className={classes.placeholder}
@@ -28,10 +25,37 @@ function Warehouses({ loadedWarehouses }) {
       </p>
     </div>
   );
+
+  const warehouses = [
+    ...loadedWarehouses,
+    { name: "second" },
+    { name: "third" },
+    { name: "fourth" },
+  ];
+
+  function intoRows(array, rowSize) {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += 3) {
+      chunks.push(array.slice(i, i + 3));
+    }
+    console.log(chunks);
+    return chunks;
+  }
+
   return (
     <div className={classes.warehousesContainer}>
       {loadedWarehouses ? (
-        <div>You have some warehouses</div>
+        <>
+          {intoRows(warehouses, 3).map((row, index) => {
+            return (
+              <WarehouseRow key={index}>
+                {row.map((warehouse, key) => {
+                  return <WarehouseEntry key={key} name={warehouse.name} />;
+                })}
+              </WarehouseRow>
+            );
+          })}
+        </>
       ) : (
         placeHolderElement
       )}

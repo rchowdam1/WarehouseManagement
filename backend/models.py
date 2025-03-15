@@ -13,7 +13,11 @@ class User(db.Model):
             "pid": self.pid,
             "username": self.username,
             "password": self.password,
+            "warehouses": [warehouse.to_json() for warehouse in self.warehouses] if self.warehouses else []
         }
+    
+    def _repr__(self):
+        return f"Username: {self.username}, pid={self.pid}"
     
 
 # make a new model to keep track of inventory
@@ -25,6 +29,14 @@ class Warehouse(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("app_users.pid"), name="warehouse_user")
     items = db.relationship("Item", backref="warehouse")
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "userId": self.user_id,
+            "items": [item.to_json() for item in self.items] if self.items else []
+        }
+
 class Item(db.Model):
     __tablename__ = "items"
 
@@ -34,4 +46,12 @@ class Item(db.Model):
     price = db.Column(db.Float, nullable=False)
     warehouse_id = db.Column(db.Integer, db.ForeignKey("warehouses.id"))
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "quantity": self.quantity,
+            "price": self.price,
+            "warehouseId": self.warehouse_id
+        }
 
