@@ -23,13 +23,13 @@ function Login() {
         username,
         password,
       };
-
       const url = "http://localhost:5000/retrieve_user";
       const options = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(data),
       };
 
@@ -46,13 +46,14 @@ function Login() {
         //console.log(response.status);
         const received = await response.json();
         console.log(received.user_id);
-        setLoginError("");
-        navigate("/landing", {
-          state: {
-            message: "hello",
-            userID: received.user_id,
-          },
-        });
+        if (response.status === 200) {
+          navigate("/landing", {
+            state: {
+              message: "hello",
+              userID: received.user_id,
+            },
+          });
+        }
       }
     } catch (error) {
       alert(error);

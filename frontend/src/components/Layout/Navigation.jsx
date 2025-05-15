@@ -7,7 +7,7 @@ function Navigation() {
       <div className={classes.appName}>WareTrack</div>
 
       <nav className={classes.navigationBar}>
-        <Link to="/overview" className={classes.navigationItem}>
+        <Link to="/landing" className={classes.navigationItem}>
           Overview
         </Link>
 

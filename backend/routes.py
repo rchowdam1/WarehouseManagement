@@ -1,5 +1,5 @@
 from flask import request, render_template, jsonify
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_bcrypt import Bcrypt
 from models import User, Warehouse, Item
 
@@ -49,9 +49,12 @@ def register_routes(app, db, bcrypt):
             if not user:
                 return jsonify({"message": "Incorrect username supplied"}), 401
             
-            if bcrypt.check_password_hash(user.password, password):
+            if bcrypt.check_password_hash(user.password, password): # successful login
+                login_user(user) # login
+                # print(f"User {user.username} logged in", flush=True)
                 return jsonify({"message": f"User with username {username} was retrieved", "user_id": user.pid}), 200
         except Exception as e:
+            print("An error occurred", flush=True)
             return jsonify({"message": f"{e}"})
 
         
@@ -115,6 +118,23 @@ def register_routes(app, db, bcrypt):
 
         return jsonify({"message":"Successfully changed password"}), 200
     
+    # Logout
+    @app.route("/logout")
+    def logout():
+        if current_user.is_authenticated:
+            print(f"User {current_user.username} logging out")
+            logout_user()
+            return jsonify({"message": "User logged out"}), 200
+        else:
+            return jsonify({"message": "User not logged in"}), 401
+        
+    # get the current user
+    @app.route("/current_user", methods=["GET"])
+    def get_current_user():
+        if current_user.is_authenticated:
+            return jsonify({"message":"User is logged in", "user_id": current_user.pid}), 200
+        else:
+            return jsonify({"message": "User is not logged in"}), 401
 
     # Warehouse routes
     ##############################################################
@@ -144,16 +164,114 @@ def register_routes(app, db, bcrypt):
             db.session.add(warehouse)
             db.session.commit()
 
-            return jsonify({"message", "Warehouse Creation Successful"}), 200
+            return jsonify({"message": "Warehouse Creation Successful"}), 200
         
         except Exception as e:
-            return jsonify({"message", "An error occurred"}), 400
+            return jsonify({"message": "An error occurred"}), 400
 
 
     
-    # resume here 2/15, resolve CORS when sending a request to the above endpoint
+    
     # items
     # Create
+    @app.route("/add_item/<wid>", methods=["POST"])
+    def create_item(wid):
+        if current_user.is_authenticated:
+            warehouse = Warehouse.query.get(wid)
+            if not warehouse:
+                return jsonify({"message": "Warehouse not found"}), 404
+            print(f"Warehouse: {warehouse.name} owned by {warehouse.user.username}")
+
+            # create the item
+            # get the item name, quantity and price from the request
+            item_name = request.json.get("itemName")
+            item_quantity = request.json.get("quantity")
+            item_price = request.json.get("price")
+
+
+            if item_quantity == 0: # if the quantity is 0, then we don't need to add the item
+                return jsonify({"message": "Item quantity is 0, not adding item"}), 200
+            
+            # check if the item already exists in the warehouse
+            item_exists = Item.query.filter(Item.warehouse_id == warehouse.id, Item.name == item_name).first()
+
+            if item_exists: # then only add to the quantity
+                item_exists.quantity += item_quantity
+                db.session.commit()
+                return jsonify({"message": "Item already exists, quantity updated"}), 200
+            
+
+            # if the item does not exist, then create a new item
+            item = Item(name=item_name, quantity=item_quantity, price=item_price, warehouse=warehouse)
+            print(item.to_json())
+            db.session.add(item)
+            db.session.commit()
+            return jsonify({"message": "Item added successfully"}), 200
+        else:
+            return jsonify({"message": "User not logged in"}), 401
+        
+
+    # Get the warehouse items to view
+    @app.route("/get_details/<wid>", methods=["GET"])
+    def get_details(wid):
+        if current_user.is_authenticated:
+            warehouse = Warehouse.query.get(wid)
+            if not warehouse:
+                return jsonify({"message": "Warehouse not found"}), 404
+            
+            items = Item.query.filter(Item.warehouse_id == warehouse.id).all()
+            if not items: # if there are no items, return an empty list
+                return jsonify({"message": "No items found in warehouse", "items": [], "name": warehouse.name}), 200
+            
+            return jsonify({"message": "Items found", "items": [item.to_json() for item in items], "name": warehouse.name}), 200
+        else:
+            return jsonify({"message": "User not logged in"}), 401
+        
+
+    # Get the warehouses of the user for the orders page
+    @app.route("/get_warehouses/<user_id>", methods=["GET"])
+    def get_warehouses(user_id):
+        if current_user.is_authenticated:
+            user = User.query.get(user_id)
+            if not user:
+                return jsonify({"message": "User not found"}), 404
+            
+            warehouses = Warehouse.query.filter(Warehouse.user_id == user_id).all()
+            if not warehouses: # if the user doesn't have any warehouses, return an empty list
+                return jsonify({"message": "No warehouses for the user", "warehouses": []}), 200
+            
+            # Now that we found the user's warehouses, return them
+            return jsonify({"message": "Warehouses found", "warehouses": [warehouse.to_json() for warehouse in warehouses]})
+        else:   
+            return jsonify({"message": "User not logged in"}), 401
+        
+
+    # a route for getting the warehouse ID based on the warehouse name
+    @app.route("/get_warehouse_id/<warehouse_name>", methods=["GET"])
+    def get_warehouse_id(warehouse_name):
+        if current_user.is_authenticated:
+            warehouse = Warehouse.query.filter(Warehouse.user_id == current_user.pid, Warehouse.name == warehouse_name).first()
+            if not warehouse:
+                return jsonify({"message": "Warehouse not found"}), 404
+            
+            # found the warehouse, return the id
+            return jsonify({"message": "Warehouse found", "warehouse_id": warehouse.id}), 200
+        else:
+            return jsonify({"message": "User not logged in"}), 401
+        
+    # a route to get the warehouse's name based on the id to display on the Order component
+    @app.route("/get_warehouse_name/<wid>", methods=["GET"])
+    def get_warehouse_name(wid):
+        if current_user.is_authenticated:
+            
+            warehouse = Warehouse.query.get(wid)
+            if not warehouse:
+                return jsonify({"message": f"Warehouse with id {wid} does not exist"}), 404
+            
+            # else the warehouse exists
+            return jsonify({"message": "Found warehouse", "name": warehouse.name}), 200
+        else:
+            return jsonify({"message": "User not logged in"}), 401
 
 
 

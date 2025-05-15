@@ -14,7 +14,7 @@ function AddWarehouses({ status, onClick, onClose, userID }) {
         userID: userID,
       };
 
-      //console.log(JSON.stringify(data));
+      console.log(JSON.stringify(data));
 
       const url = "http://localhost:5000/create_warehouse";
       const options = {

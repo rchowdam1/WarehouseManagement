@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import WarehouseRow from "./WarehouseRow";
 import WarehouseEntry from "./WarehouseEntry";
+import WarehouseView from "./Modals/WarehouseView";
 import classes from "./Warehouses.module.css";
 
 function Warehouses({ loadedWarehouses }) {
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const placeHolderElement = (
     <div
       className={classes.placeholder}
@@ -26,19 +28,14 @@ function Warehouses({ loadedWarehouses }) {
     </div>
   );
 
-  const warehouses = [
-    ...loadedWarehouses,
-    { name: "second" },
-    { name: "third" },
-    { name: "fourth" },
-  ];
+  const warehouses = [...loadedWarehouses];
 
   function intoRows(array, rowSize) {
     const chunks = [];
     for (let i = 0; i < array.length; i += 3) {
       chunks.push(array.slice(i, i + 3));
     }
-    console.log(chunks);
+    //console.log(chunks);
     return chunks;
   }
 
@@ -50,8 +47,23 @@ function Warehouses({ loadedWarehouses }) {
             return (
               <WarehouseRow key={index}>
                 {row.map((warehouse, key) => {
-                  return <WarehouseEntry key={key} name={warehouse.name} />;
+                  console.log(warehouse.id);
+                  return (
+                    <WarehouseEntry
+                      key={key}
+                      name={warehouse.name}
+                      onClick={() => {
+                        setSelectedWarehouse(warehouse);
+                      }}
+                    />
+                  );
                 })}
+                <WarehouseView
+                  open={!!selectedWarehouse}
+                  warehouseName={selectedWarehouse?.name}
+                  onClose={() => setSelectedWarehouse(null)}
+                  warehouseID={selectedWarehouse?.id}
+                />
               </WarehouseRow>
             );
           })}

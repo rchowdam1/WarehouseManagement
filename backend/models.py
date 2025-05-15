@@ -1,6 +1,7 @@
-from app import db
+from flask_login import UserMixin
+from db import db
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "app_users"
 
     pid = db.Column(db.Integer, primary_key=True)
@@ -18,6 +19,9 @@ class User(db.Model):
     
     def _repr__(self):
         return f"Username: {self.username}, pid={self.pid}"
+    
+    def get_id(self):
+        return self.pid
     
 
 # make a new model to keep track of inventory

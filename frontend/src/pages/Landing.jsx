@@ -11,6 +11,7 @@ import classes from "./Landing.module.css";
 function Landing() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userID, setUserID] = useState();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [loadedUsername, setLoadedUsername] = useState("");
@@ -20,18 +21,60 @@ function Landing() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [clearModalOpen, setClearModalOpen] = useState(false);
 
+  // opening warehouse modal
+
   useEffect(() => {
     const retrieve = async () => {
       try {
-        const url = `http://localhost:5000/select_user/${location.state.userID}`;
+        /*
+         * Get the userID of the logged in user
+         */
+        const idUrl = "http://localhost:5000/current_user";
 
-        const response = await fetch(url);
+        let loggedInID = undefined;
+
+        const idResponse = await fetch(idUrl, {
+          credentials: "include",
+        });
+
+        if (!idResponse.ok) {
+          alert(idResponse, "redirecting to login");
+          navigate("/login", { replace: true });
+          return;
+        } else {
+          const idReceived = await idResponse.json();
+          if (idReceived.message === "User is logged in") {
+            // user is logged in to set the userID
+            loggedInID = idReceived.user_id;
+            console.log(
+              idReceived.user_id,
+              "this is the user id fetched from the server"
+            );
+            setUserID(idReceived.user_id);
+          } else {
+            alert("User is not logged in");
+            navigate("/login", { replace: true });
+            return;
+          }
+        }
+
+        if (loggedInID === undefined) {
+          alert("Couldn't set the userID, redirecting to login");
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        const url = `http://localhost:5000/select_user/${loggedInID}`;
+
+        const response = await fetch(url, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           alert(response);
         } else {
           const received = await response.json();
-          console.log(received.warehouses);
+          console.log(received.warehouses, "these are the user's warehouses");
           setLoadedUsername(received.username);
           setUserWarehouses(received.warehouses);
         }
@@ -47,7 +90,30 @@ function Landing() {
     setModalOpen(!modalOpen);
   };
 
-  const logOut = () => {
+  const logOut = async () => {
+    const url = "http://localhost:5000/logout";
+
+    try {
+      const response = await fetch(url, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        alert(response, "error logging out");
+        return;
+      } else {
+        const received = await response.json();
+        console.log(response.status);
+        if (received.message === "User logged out") {
+          console.log("User logged out");
+        } else {
+          alert("Problem occurred while trying to log out");
+          return;
+        }
+      }
+    } catch (error) {
+      alert(error, "error logging out");
+      return;
+    }
     navigate("/", { replace: true });
   };
 
@@ -132,7 +198,7 @@ function Landing() {
           styling={{ position: "relative", left: "75px" }}
           addWarehouseModalStatus={createModalOpen}
           clearWarehouseModalStatus={clearModalOpen}
-          userID={location.state.userID}
+          userID={userID}
           onAddWarehouseClick={() => {
             setCreateModalOpen(true);
           }}

@@ -7,6 +7,8 @@ import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Layout from "./components/Layout/Layout";
 import Landing from "./pages/Landing";
+import WarehouseDetails from "./pages/WarehouseDetails";
+import WarehouseOrders from "./pages/WarehouseOrders";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="/landing" element={<Landing />} />
+      <Route path="/warehouse/:wid" element={<WarehouseDetails />} />
+      <Route path="/orders" element={<WarehouseOrders />} />
     </Routes>
   );
 }
